@@ -37,3 +37,7 @@ export type TicketType = {
   createdAt: Date;
   updatedAt: Date;
 }
+
+export type TicketId = {
+  ticketId: string | number;
+}
