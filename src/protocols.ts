@@ -41,3 +41,14 @@ export type TicketType = {
 export type TicketId = {
   ticketId: string | number;
 }
+
+export type PaymentType = {
+	ticketId: number,
+	cardData: {
+		issuer: string,
+    number: number,
+    name: string,
+    expirationDate: Date,
+    cvv: number
+	}
+}
