@@ -1,6 +1,7 @@
+import { TicketType } from "@/protocols";
 import ticketsRepository from "@/repositories/tickets-repository"
 
-async function getAllTickets() {
+async function getAllTickets(): Promise<TicketType[]> {
 
     const allTickets = await ticketsRepository.getAllTickets();
     return allTickets;
