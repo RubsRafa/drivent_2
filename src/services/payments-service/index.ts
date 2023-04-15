@@ -34,15 +34,9 @@ async function postPayment(pay: PaymentType, userId: number){
     const findTicketType = await paymentsRepository.findTicketType(ticketExist.ticketTypeId);
     if(!findTicketType) throw notFoundError();
 
-    console.log('body recebido', pay)
-    console.log(ticketExist)
-    console.log(findEnrollment)
-    console.log(findTicketType)
-
     const payed = await paymentsRepository.postPayment(pay, findTicketType.price);
     await paymentsRepository.updateTicket(ticketExist.id);
 
-    console.log('retorno do post payment', payed)
     return payed;
 }
 

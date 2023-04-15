@@ -11,7 +11,6 @@ export async function getAllTickets(req: AuthenticatedRequest, res: Response) {
         return res.status(httpStatus.OK).send(allTickets)
         
     } catch (err) {
-        console.log(err);
         return res.sendStatus(httpStatus.NO_CONTENT)
     }
 }
@@ -24,7 +23,6 @@ export async function getMyTicket(req: AuthenticatedRequest, res: Response) {
         return res.status(httpStatus.OK).send(myTicket)
         
     } catch (err) {
-        console.log(err);
         return res.sendStatus(httpStatus.NOT_FOUND)
     }
 }
@@ -39,8 +37,6 @@ export async function postTicket(req: AuthenticatedRequest, res: Response, next:
 
         
     } catch (err) {
-        console.log(err);
-        // return res.sendStatus(httpStatus.BAD_REQUEST)
         next(err);
     }
 }

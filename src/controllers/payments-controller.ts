@@ -14,7 +14,6 @@ export async function getPayment(req: AuthenticatedRequest, res: Response, next:
         return res.status(httpStatus.OK).send(myPayment);
         
     } catch (err) {
-        console.log(err);
         next(err);
     }
 }
@@ -28,7 +27,6 @@ export async function postPayment(req: AuthenticatedRequest, res: Response, next
         return res.status(httpStatus.OK).send(payment);
         
     } catch (err) {
-        console.log(err);
         next(err);
     }
 }
