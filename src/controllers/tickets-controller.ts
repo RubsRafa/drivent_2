@@ -1,42 +1,36 @@
-import { NextFunction, Response } from "express";
-import { AuthenticatedRequest } from "@/middlewares";
-import httpStatus from "http-status";
-import ticketsService from "@/services/tickets-service";
+import { NextFunction, Response } from 'express';
+import httpStatus from 'http-status';
+import { AuthenticatedRequest } from '@/middlewares';
+import ticketsService from '@/services/tickets-service';
 
 export async function getAllTickets(req: AuthenticatedRequest, res: Response) {
-
-    try {
-
-        const allTickets = await ticketsService.getAllTickets();
-        return res.status(httpStatus.OK).send(allTickets)
-        
-    } catch (err) {
-        return res.sendStatus(httpStatus.NO_CONTENT)
-    }
+  try {
+    const allTickets = await ticketsService.getAllTickets();
+    return res.status(httpStatus.OK).send(allTickets);
+  } catch (err) {
+    return res.sendStatus(httpStatus.NO_CONTENT);
+  }
 }
 
 export async function getMyTicket(req: AuthenticatedRequest, res: Response) {
-    const { userId } = req;
+  const { userId } = req;
 
-    try {
-        const myTicket = await ticketsService.getMyTicket(userId);
-        return res.status(httpStatus.OK).send(myTicket)
-        
-    } catch (err) {
-        return res.sendStatus(httpStatus.NOT_FOUND)
-    }
+  try {
+    const myTicket = await ticketsService.getMyTicket(userId);
+    return res.status(httpStatus.OK).send(myTicket);
+  } catch (err) {
+    return res.sendStatus(httpStatus.NOT_FOUND);
+  }
 }
 
 export async function postTicket(req: AuthenticatedRequest, res: Response, next: NextFunction) {
-    const { ticketTypeId } = req.body;
-    const { userId } = req;
+  const { ticketTypeId } = req.body;
+  const { userId } = req;
 
-    try {
-        const myPostedTicket = await ticketsService.postTicket(ticketTypeId, userId);
-        return res.status(httpStatus.CREATED).send(myPostedTicket)
-
-        
-    } catch (err) {
-        next(err);
-    }
+  try {
+    const myPostedTicket = await ticketsService.postTicket(ticketTypeId, userId);
+    return res.status(httpStatus.CREATED).send(myPostedTicket);
+  } catch (err) {
+    next(err);
+  }
 }

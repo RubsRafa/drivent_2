@@ -36,19 +36,19 @@ export type TicketType = {
   includesHotel: boolean;
   createdAt: Date;
   updatedAt: Date;
-}
+};
 
 export type TicketId = {
   ticketId: string | number;
-}
+};
 
 export type PaymentType = {
-	ticketId: number,
-	cardData: {
-		issuer: string,
-    number: number,
-    name: string,
-    expirationDate: Date,
-    cvv: number
-	}
-}
+  ticketId: number;
+  cardData: {
+    issuer: string;
+    number: number;
+    name: string;
+    expirationDate: Date;
+    cvv: number;
+  };
+};
