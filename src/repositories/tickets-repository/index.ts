@@ -34,9 +34,29 @@ async function getMyTicket(userId: number) {
     })
 }
 
+async function findUserEnrollment(userId: number) {
+    return prisma.enrollment.findUnique({
+        where: {
+            userId
+        }
+    })
+}
+
+async function postTicket(ticketTypeId: number, enrollmentId: number) {
+    return prisma.ticket.create({
+        data: {
+            ticketTypeId,
+            enrollmentId,
+            status: "RESERVED"
+        }
+    })
+}
+
 const ticketsRepository = {
     getAllTickets,
-    getMyTicket
+    getMyTicket,
+    findUserEnrollment,
+    postTicket
 }
 
 export default ticketsRepository

@@ -1,4 +1,5 @@
 import { notFoundError } from "@/errors";
+import { badRequestError } from "@/errors/bad-request";
 import { TicketType } from "@/protocols";
 import ticketsRepository from "@/repositories/tickets-repository"
 
@@ -18,10 +19,24 @@ async function getMyTicket(userId: number) {
     return myTicket;
 }
 
+async function postTicket(ticketTypeId: number, userId:number) {
+
+    if(!ticketTypeId) throw badRequestError();
+    const enrollment = await ticketsRepository.findUserEnrollment(userId);
+
+    if(!enrollment) throw notFoundError();
+
+    await ticketsRepository.postTicket(ticketTypeId, enrollment.id)
+
+    const [myPostedTicket] = await ticketsRepository.getMyTicket(userId)
+    return myPostedTicket;
+}
+
 
 const ticketsService = {
     getAllTickets,
-    getMyTicket
+    getMyTicket,
+    postTicket
 }
 
 export default ticketsService

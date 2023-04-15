@@ -1,4 +1,4 @@
-import { Response } from "express";
+import { NextFunction, Response } from "express";
 import { AuthenticatedRequest } from "@/middlewares";
 import httpStatus from "http-status";
 import ticketsService from "@/services/tickets-service";
@@ -26,5 +26,21 @@ export async function getMyTicket(req: AuthenticatedRequest, res: Response) {
     } catch (err) {
         console.log(err);
         return res.sendStatus(httpStatus.NOT_FOUND)
+    }
+}
+
+export async function postTicket(req: AuthenticatedRequest, res: Response, next: NextFunction) {
+    const { ticketTypeId } = req.body;
+    const { userId } = req;
+
+    try {
+        const myPostedTicket = await ticketsService.postTicket(ticketTypeId, userId);
+        return res.status(httpStatus.CREATED).send(myPostedTicket)
+
+        
+    } catch (err) {
+        console.log(err);
+        // return res.sendStatus(httpStatus.BAD_REQUEST)
+        next(err);
     }
 }
