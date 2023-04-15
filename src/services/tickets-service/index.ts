@@ -8,10 +8,15 @@ async function getAllTickets(): Promise<TicketType[]> {
 
 }
 
+async function getMyTicket(userId: number) {
+    const [myTicket] = await ticketsRepository.getMyTicket(userId);
+    return myTicket;
+}
 
 
 const ticketsService = {
-    getAllTickets
+    getAllTickets,
+    getMyTicket
 }
 
 export default ticketsService
