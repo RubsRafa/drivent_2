@@ -14,11 +14,11 @@ async function getPayment (ticketId: string | number, userId: number) {
     if(!findEnrollment) throw notFoundError();
     if(findEnrollment.userId !== userId) throw unauthorizedError();
 
-    const getPayment = await paymentsRepository.getPayment(newTicketId);
+    const payment = await paymentsRepository.getPayment(newTicketId);
 
-    if(!getPayment) throw notFoundError();
+    if(!payment) throw notFoundError();
 
-    return getPayment
+    return payment
 }
 
 async function postPayment(pay: PaymentType, userId: number){
