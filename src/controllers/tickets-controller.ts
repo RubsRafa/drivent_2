@@ -1,36 +1,37 @@
 import { NextFunction, Response } from 'express';
 import httpStatus from 'http-status';
 import { AuthenticatedRequest } from '@/middlewares';
-import ticketsService from '@/services/tickets-service';
+import ticketService from '@/services/tickets-service';
+import { InputTicketBody } from '@/protocols';
 
-export async function getAllTickets(req: AuthenticatedRequest, res: Response) {
+export async function getTicketTypes(req: AuthenticatedRequest, res: Response, next: NextFunction): Promise<Response> {
   try {
-    const allTickets = await ticketsService.getAllTickets();
-    return res.status(httpStatus.OK).send(allTickets);
-  } catch (err) {
-    return res.sendStatus(httpStatus.NO_CONTENT);
+    const ticketTypes = await ticketService.getTicketType();
+    return res.status(httpStatus.OK).send(ticketTypes);
+  } catch (e) {
+    next(e);
   }
 }
 
-export async function getMyTicket(req: AuthenticatedRequest, res: Response) {
+export async function getTickets(req: AuthenticatedRequest, res: Response, next: NextFunction): Promise<Response> {
   const { userId } = req;
 
   try {
-    const myTicket = await ticketsService.getMyTicket(userId);
-    return res.status(httpStatus.OK).send(myTicket);
-  } catch (err) {
-    return res.sendStatus(httpStatus.NOT_FOUND);
+    const ticket = await ticketService.getTicketByUserId(userId);
+    return res.status(httpStatus.OK).send(ticket);
+  } catch (e) {
+    next(e);
   }
 }
 
-export async function postTicket(req: AuthenticatedRequest, res: Response, next: NextFunction) {
-  const { ticketTypeId } = req.body;
+export async function createTicket(req: AuthenticatedRequest, res: Response, next: NextFunction): Promise<Response> {
   const { userId } = req;
+  const { ticketTypeId } = req.body as InputTicketBody;
 
   try {
-    const myPostedTicket = await ticketsService.postTicket(ticketTypeId, userId);
-    return res.status(httpStatus.CREATED).send(myPostedTicket);
-  } catch (err) {
-    next(err);
+    const ticket = await ticketService.createTicket(userId, ticketTypeId);
+    return res.status(httpStatus.CREATED).send(ticket);
+  } catch (e) {
+    next(e);
   }
 }

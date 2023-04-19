@@ -1,30 +1,42 @@
-import { NextFunction, Response } from 'express';
+import { Response } from 'express';
 import httpStatus from 'http-status';
 import { AuthenticatedRequest } from '@/middlewares';
 import paymentsService from '@/services/payments-service';
-import { PaymentType, TicketId } from '@/protocols';
 
-export async function getPayment(req: AuthenticatedRequest, res: Response, next: NextFunction) {
-  const { ticketId } = req.query as TicketId;
-  const { userId } = req;
-
+export async function getPaymentByTicketId(req: AuthenticatedRequest, res: Response) {
   try {
-    const myPayment = await paymentsService.getPayment(ticketId, userId);
+    const ticketId = Number(req.query.ticketId);
+    const { userId } = req;
 
-    return res.status(httpStatus.OK).send(myPayment);
-  } catch (err) {
-    next(err);
+    if (!ticketId) return res.sendStatus(httpStatus.BAD_REQUEST);
+
+    const payment = await paymentsService.getPaymentByTicketId(userId, ticketId);
+    if (!payment) return res.sendStatus(httpStatus.NOT_FOUND);
+
+    return res.status(httpStatus.OK).send(payment);
+  } catch (error) {
+    if (error.name === 'UnauthorizedError') {
+      return res.sendStatus(httpStatus.UNAUTHORIZED);
+    }
+    return res.sendStatus(httpStatus.NOT_FOUND);
   }
 }
 
-export async function postPayment(req: AuthenticatedRequest, res: Response, next: NextFunction) {
-  const pay = req.body as PaymentType;
+export async function paymentProcess(req: AuthenticatedRequest, res: Response) {
   const { userId } = req;
+  const { ticketId, cardData } = req.body;
 
   try {
-    const payment = await paymentsService.postPayment(pay, userId);
+    if (!ticketId || !cardData) return res.sendStatus(httpStatus.BAD_REQUEST);
+
+    const payment = await paymentsService.paymentProcess(ticketId, userId, cardData);
+    if (!payment) return res.sendStatus(httpStatus.NOT_FOUND);
+
     return res.status(httpStatus.OK).send(payment);
-  } catch (err) {
-    next(err);
+  } catch (error) {
+    if (error.name === 'UnauthorizedError') {
+      return res.sendStatus(httpStatus.UNAUTHORIZED);
+    }
+    return res.sendStatus(httpStatus.NOT_FOUND);
   }
 }
