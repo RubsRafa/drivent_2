@@ -1,11 +1,11 @@
-import { Hotel, Room } from '@prisma/client';
+import { Enrollment, Hotel, Room, Ticket, TicketType } from '@prisma/client';
 import { prisma } from '@/config';
 
 async function findAllHotels(): Promise<Hotel[]> {
   return prisma.hotel.findMany();
 }
 
-async function findEnrollmentByUserId(userId: number) {
+async function findEnrollmentByUserId(userId: number): Promise<Enrollment> {
   return prisma.enrollment.findUnique({
     where: {
       userId,
@@ -13,7 +13,7 @@ async function findEnrollmentByUserId(userId: number) {
   });
 }
 
-async function findTicketByEnrollmentId(enrollmentId: number) {
+async function findTicketByEnrollmentId(enrollmentId: number): Promise<Ticket> {
   return prisma.ticket.findFirst({
     where: {
       enrollmentId,
@@ -21,7 +21,7 @@ async function findTicketByEnrollmentId(enrollmentId: number) {
   });
 }
 
-async function findTypeByTicketId(id: number) {
+async function findTypeByTicketId(id: number): Promise<TicketType> {
   return prisma.ticketType.findUnique({
     where: {
       id,
