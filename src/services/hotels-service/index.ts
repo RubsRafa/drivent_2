@@ -43,6 +43,8 @@ async function getRoomsByHotelId(userId: number, hotelId: number): Promise<Hotel
   await verifyIfUserHas(userId);
 
   const hotel: Hotel & { Rooms: Room[] } = await hotelsRepository.findHotelById(hotelId);
+
+  if (!hotel) throw notFoundError();
   return hotel;
 }
 

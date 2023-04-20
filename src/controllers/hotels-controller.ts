@@ -16,7 +16,7 @@ export async function getAllHotels(req: AuthenticatedRequest, res: Response, nex
 
 export async function getRoomsByHotelId(req: AuthenticatedRequest, res: Response, next: NextFunction) {
   const { userId } = req;
-  const hotelId = Number(req.query.hotelId);
+  const hotelId = Number(req.params.hotelId);
 
   try {
     if (!hotelId) return res.sendStatus(httpStatus.BAD_REQUEST);
