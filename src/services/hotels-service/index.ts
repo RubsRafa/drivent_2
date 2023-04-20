@@ -3,12 +3,7 @@ import hotelsRepository from '@/repositories/hotels-repository';
 import { notFoundError, paymentRequiredError } from '@/errors';
 import paymentsRepository from '@/repositories/payments-repository';
 
-async function getAllHotels(): Promise<Hotel[]> {
-  const hotels: Hotel[] = await hotelsRepository.findAllHotels();
-  return hotels;
-}
-
-async function getRoomsByHotelId(userId: number, hotelId: number): Promise<Hotel & { Rooms: Room[] }> {
+async function verifyIfUserHas(userId: number) {
   const userHasEnrollment: Enrollment = await hotelsRepository.findEnrollmentByUserId(userId);
   if (!userHasEnrollment) throw notFoundError();
 
@@ -24,6 +19,19 @@ async function getRoomsByHotelId(userId: number, hotelId: number): Promise<Hotel
     throw paymentRequiredError(
       'This event is remote or does not include a hotel, so it is not possible to book accommodation',
     );
+
+  return;
+}
+
+async function getAllHotels(userId: number): Promise<Hotel[]> {
+  await verifyIfUserHas(userId);
+
+  const hotels: Hotel[] = await hotelsRepository.findAllHotels();
+  return hotels;
+}
+
+async function getRoomsByHotelId(userId: number, hotelId: number): Promise<Hotel & { Rooms: Room[] }> {
+  await verifyIfUserHas(userId);
 
   const hotel: Hotel & { Rooms: Room[] } = await hotelsRepository.findHotelById(hotelId);
   return hotel;
