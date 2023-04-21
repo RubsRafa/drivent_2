@@ -16,7 +16,7 @@ async function verifyIfUserHas(userId: number) {
     throw paymentRequiredError('This user has not payed this ticket yet');
 
   const ticketTypeHasHotel: TicketType = await hotelsRepository.findTypeByTicketId(userHasTicket.ticketTypeId);
-  if (ticketTypeHasHotel.isRemote)
+  if (ticketTypeHasHotel.isRemote === true)
     throw paymentRequiredError('This event is remote, so it is not possible to book accommodation');
 
   if (ticketTypeHasHotel.includesHotel === false)
@@ -35,7 +35,7 @@ async function getAllHotels(userId: number): Promise<Hotel[]> {
 
   const hotels: Hotel[] = await hotelsRepository.findAllHotels();
 
-  if (hotels[0] === null || hotels[0] === undefined) throw notFoundError();
+  if (hotels[0] === null || hotels[0] === undefined || !hotels[0]) throw notFoundError();
   return hotels;
 }
 
@@ -44,7 +44,7 @@ async function getRoomsByHotelId(userId: number, hotelId: number): Promise<Hotel
 
   const hotel: Hotel & { Rooms: Room[] } = await hotelsRepository.findHotelById(hotelId);
 
-  if (hotel === null || hotel === undefined) throw notFoundError();
+  if (hotel === null || hotel === undefined || !hotel) throw notFoundError();
   return hotel;
 }
 

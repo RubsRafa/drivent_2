@@ -24,6 +24,14 @@ beforeEach(async () => {
 const server = supertest(app);
 
 describe('GET /hotels', () => {
+  it('Should respond with status 401 when sending an invalid token', async () => {
+    await createUser();
+    const token = 'invalid token';
+
+    const response = await server.get('/hotels').set('Authorization', `Bearer ${token}`);
+    expect(response.status).toBe(httpStatus.UNAUTHORIZED);
+  });
+
   it('should respond with status 404 if subscription does not exist', async () => {
     const user = await createUser();
     const token = await generateValidToken(user);
@@ -116,6 +124,14 @@ describe('GET /hotels', () => {
 });
 
 describe('GET /hotels/:hotelId', () => {
+  it('Should respond with status 401 when sending an invalid token', async () => {
+    await createUser();
+    const token = 'invalid token';
+
+    const response = await server.get('/hotels').set('Authorization', `Bearer ${token}`);
+    expect(response.status).toBe(httpStatus.UNAUTHORIZED);
+  });
+
   it('should respond with status 404 if subscription does not exist', async () => {
     const user = await createUser();
     const token = await generateValidToken(user);
