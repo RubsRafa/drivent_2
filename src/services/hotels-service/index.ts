@@ -35,7 +35,7 @@ async function getAllHotels(userId: number): Promise<Hotel[]> {
 
   const hotels: Hotel[] = await hotelsRepository.findAllHotels();
 
-  if (hotels.length === 0) throw notFoundError();
+  if (!hotels[0]) throw notFoundError();
   return hotels;
 }
 

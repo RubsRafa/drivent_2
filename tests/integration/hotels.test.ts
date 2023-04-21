@@ -95,7 +95,7 @@ describe('GET /hotels', () => {
     await createPayment(ticket.id, ticketType.price);
 
     const response = await server.get('/hotels').set('Authorization', `Bearer ${token}`);
-    expect(response.status).toBe(httpStatus.NOT_FOUND);
+    expect(response.status).toEqual(httpStatus.NOT_FOUND);
   });
 
   it('should return the list of available hotels on success', async () => {
@@ -111,7 +111,7 @@ describe('GET /hotels', () => {
     await createHotel();
 
     const response = await server.get('/hotels').set('Authorization', `Bearer ${token}`);
-    expect(response.status).toBe(httpStatus.OK);
+    expect(response.status).toEqual(httpStatus.OK);
   });
 });
 
@@ -154,7 +154,7 @@ describe('GET /hotels/:hotelId', () => {
     await createRoom(hotel.id);
 
     const response = await server.get(`/hotels/${hotel.id + 1}`).set('Authorization', `Bearer ${token}`);
-    expect(response.status).toBe(httpStatus.NOT_FOUND);
+    expect(response.status).toEqual(httpStatus.NOT_FOUND);
   });
 
   it('should respond with status 402 if ticket has not been paid', async () => {
@@ -221,6 +221,6 @@ describe('GET /hotels/:hotelId', () => {
     await createRoom(hotel.id);
 
     const response = await server.get(`/hotels/${hotel.id}`).set('Authorization', `Bearer ${token}`);
-    expect(response.status).toBe(httpStatus.OK);
+    expect(response.status).toEqual(httpStatus.OK);
   });
 });
