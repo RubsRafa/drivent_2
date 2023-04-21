@@ -150,10 +150,7 @@ describe('GET /hotels/:hotelId', () => {
     const ticket = await createTicket(enrollment.id, ticketType.id, TicketStatus.PAID);
     await createPayment(ticket.id, ticketType.price);
 
-    const hotel = await createHotel();
-    await createRoom(hotel.id);
-
-    const response = await server.get(`/hotels/${hotel.id + 1}`).set('Authorization', `Bearer ${token}`);
+    const response = await server.get(`/hotels/1`).set('Authorization', `Bearer ${token}`);
     expect(response.status).toEqual(httpStatus.NOT_FOUND);
   });
 
