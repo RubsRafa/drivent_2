@@ -35,7 +35,7 @@ async function getAllHotels(userId: number): Promise<Hotel[]> {
 
   const hotels: Hotel[] = await hotelsRepository.findAllHotels();
 
-  if (!hotels[0]) throw notFoundError();
+  if (hotels[0] === null || hotels[0] === undefined) throw notFoundError();
   return hotels;
 }
 
@@ -44,7 +44,7 @@ async function getRoomsByHotelId(userId: number, hotelId: number): Promise<Hotel
 
   const hotel: Hotel & { Rooms: Room[] } = await hotelsRepository.findHotelById(hotelId);
 
-  if (!hotel) throw notFoundError();
+  if (hotel === null || hotel === undefined) throw notFoundError();
   return hotel;
 }
 
