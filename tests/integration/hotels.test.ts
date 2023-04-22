@@ -4,7 +4,6 @@ import { TicketStatus } from '@prisma/client';
 import { generateValidToken, cleanDb } from '../helpers';
 import {
   createEnrollmentWithAddress,
-  createPayment,
   createTicket,
   createTicketType,
   createUser,
@@ -71,8 +70,7 @@ describe('GET /hotels', () => {
     const includesHotel = true;
     const ticketType = await modifyCreateTicketType(isRemote, includesHotel);
 
-    const ticket = await createTicket(enrollment.id, ticketType.id, TicketStatus.PAID);
-    await createPayment(ticket.id, ticketType.price);
+    await createTicket(enrollment.id, ticketType.id, TicketStatus.PAID);
 
     const response = await server.get('/hotels').set('Authorization', `Bearer ${token}`);
     expect(response.status).toEqual(httpStatus.PAYMENT_REQUIRED);
@@ -86,8 +84,7 @@ describe('GET /hotels', () => {
     const includesHotel = false;
     const ticketType = await modifyCreateTicketType(isRemote, includesHotel);
 
-    const ticket = await createTicket(enrollment.id, ticketType.id, TicketStatus.PAID);
-    await createPayment(ticket.id, ticketType.price);
+    await createTicket(enrollment.id, ticketType.id, TicketStatus.PAID);
 
     const response = await server.get('/hotels').set('Authorization', `Bearer ${token}`);
     expect(response.status).toEqual(httpStatus.PAYMENT_REQUIRED);
@@ -208,8 +205,7 @@ describe('GET /hotels/:hotelId', () => {
     const includesHotel = true;
     const ticketType = await modifyCreateTicketType(isRemote, includesHotel);
 
-    const ticket = await createTicket(enrollment.id, ticketType.id, TicketStatus.PAID);
-    await createPayment(ticket.id, ticketType.price);
+    await createTicket(enrollment.id, ticketType.id, TicketStatus.PAID);
 
     const hotel = await createHotel();
     await createRoom(hotel.id);
@@ -226,8 +222,7 @@ describe('GET /hotels/:hotelId', () => {
     const includesHotel = false;
     const ticketType = await modifyCreateTicketType(isRemote, includesHotel);
 
-    const ticket = await createTicket(enrollment.id, ticketType.id, TicketStatus.PAID);
-    await createPayment(ticket.id, ticketType.price);
+    await createTicket(enrollment.id, ticketType.id, TicketStatus.PAID);
 
     const hotel = await createHotel();
     await createRoom(hotel.id);

@@ -1,14 +1,15 @@
-import { Enrollment, Hotel, Payment, Room, Ticket, TicketStatus, TicketType } from '@prisma/client';
+import { Enrollment, Hotel, Room, Ticket, TicketStatus, TicketType } from '@prisma/client';
 import hotelsRepository from '@/repositories/hotels-repository';
 import { notFoundError, paymentRequiredError } from '@/errors';
-import paymentsRepository from '@/repositories/payments-repository';
 
 async function verifyIfUserHas(userId: number) {
   const userHasEnrollment: Enrollment = await hotelsRepository.findEnrollmentByUserId(userId);
 
   if (!userHasEnrollment) throw notFoundError();
 
-  const userHasTicket = await hotelsRepository.findTicketByEnrollmentId(userHasEnrollment.id);
+  const userHasTicket: Ticket & { TicketType: TicketType } = await hotelsRepository.findTicketByEnrollmentId(
+    userHasEnrollment.id,
+  );
 
   if (!userHasTicket) throw notFoundError();
 
