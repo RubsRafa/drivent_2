@@ -8,10 +8,12 @@ import {
   createTicket,
   createTicketType,
   createUser,
+  generateCreditCardData,
   modifyCreateTicketType,
 } from '../factories';
 import { createHotel, createRoom } from '../factories/hotels-factory';
 import app, { init } from '@/app';
+import { prisma } from '@/config';
 
 beforeAll(async () => {
   await init();
@@ -99,8 +101,12 @@ describe('GET /hotels', () => {
     const includesHotel = true;
     const ticketType = await modifyCreateTicketType(isRemote, includesHotel);
 
-    const ticket = await createTicket(enrollment.id, ticketType.id, TicketStatus.PAID);
-    await createPayment(ticket.id, ticketType.price);
+    const ticket = await createTicket(enrollment.id, ticketType.id, TicketStatus.RESERVED);
+
+    const body = { ticketId: ticket.id, cardData: generateCreditCardData() };
+    await server.post('/payments/process').set('Authorization', `Bearer ${token}`).send(body);
+
+    await prisma.ticket.findUnique({ where: { id: ticket.id } });
 
     const response = await server.get('/hotels').set('Authorization', `Bearer ${token}`);
     expect(response.status).toEqual(httpStatus.NOT_FOUND);
@@ -114,9 +120,15 @@ describe('GET /hotels', () => {
     const includesHotel = true;
     const ticketType = await modifyCreateTicketType(isRemote, includesHotel);
 
-    const ticket = await createTicket(enrollment.id, ticketType.id, TicketStatus.PAID);
-    await createPayment(ticket.id, ticketType.price);
-    await createHotel();
+    const ticket = await createTicket(enrollment.id, ticketType.id, TicketStatus.RESERVED);
+
+    const hotel = await createHotel();
+    await createRoom(hotel.id);
+
+    const body = { ticketId: ticket.id, cardData: generateCreditCardData() };
+    await server.post('/payments/process').set('Authorization', `Bearer ${token}`).send(body);
+
+    await prisma.ticket.findUnique({ where: { id: ticket.id } });
 
     const response = await server.get('/hotels').set('Authorization', `Bearer ${token}`);
     expect(response.status).toEqual(httpStatus.OK);
@@ -163,8 +175,12 @@ describe('GET /hotels/:hotelId', () => {
     const includesHotel = true;
     const ticketType = await modifyCreateTicketType(isRemote, includesHotel);
 
-    const ticket = await createTicket(enrollment.id, ticketType.id, TicketStatus.PAID);
-    await createPayment(ticket.id, ticketType.price);
+    const ticket = await createTicket(enrollment.id, ticketType.id, TicketStatus.RESERVED);
+
+    const body = { ticketId: ticket.id, cardData: generateCreditCardData() };
+    await server.post('/payments/process').set('Authorization', `Bearer ${token}`).send(body);
+
+    await prisma.ticket.findUnique({ where: { id: ticket.id } });
 
     const response = await server.get(`/hotels/1`).set('Authorization', `Bearer ${token}`);
     expect(response.status).toEqual(httpStatus.NOT_FOUND);
@@ -228,10 +244,15 @@ describe('GET /hotels/:hotelId', () => {
     const includesHotel = true;
     const ticketType = await modifyCreateTicketType(isRemote, includesHotel);
 
-    const ticket = await createTicket(enrollment.id, ticketType.id, TicketStatus.PAID);
-    await createPayment(ticket.id, ticketType.price);
+    const ticket = await createTicket(enrollment.id, ticketType.id, TicketStatus.RESERVED);
+
     const hotel = await createHotel();
     await createRoom(hotel.id);
+
+    const body = { ticketId: ticket.id, cardData: generateCreditCardData() };
+    await server.post('/payments/process').set('Authorization', `Bearer ${token}`).send(body);
+
+    await prisma.ticket.findUnique({ where: { id: ticket.id } });
 
     const response = await server.get(`/hotels/${hotel.id}`).set('Authorization', `Bearer ${token}`);
     expect(response.status).toEqual(httpStatus.OK);
