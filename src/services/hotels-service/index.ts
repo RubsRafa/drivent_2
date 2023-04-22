@@ -8,23 +8,18 @@ async function verifyIfUserHas(userId: number) {
 
   if (!userHasEnrollment) throw notFoundError();
 
-  const userHasTicket: Ticket = await hotelsRepository.findTicketByEnrollmentId(userHasEnrollment.id);
+  const userHasTicket = await hotelsRepository.findTicketByEnrollmentId(userHasEnrollment.id);
 
   if (!userHasTicket) throw notFoundError();
 
   if (userHasTicket.status === TicketStatus.RESERVED)
     throw paymentRequiredError('This user has not payed this ticket yet');
 
-  const ticketTypeHasHotel: TicketType = await hotelsRepository.findTypeByTicketId(userHasTicket.ticketTypeId);
-  if (ticketTypeHasHotel.isRemote === true)
+  if (userHasTicket.TicketType.isRemote === true)
     throw paymentRequiredError('This event is remote, so it is not possible to book accommodation');
 
-  if (ticketTypeHasHotel.includesHotel === false)
+  if (userHasTicket.TicketType.includesHotel === false)
     throw paymentRequiredError('This event does not include a hotel, so it is not possible to book accommodation');
-
-  const userHasPayed: Payment = await paymentsRepository.findPaymentByTicketId(userHasTicket.id);
-
-  if (!userHasPayed) throw paymentRequiredError('This user has not payed this ticket yet');
 
   return;
 }

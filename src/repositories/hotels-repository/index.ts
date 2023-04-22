@@ -13,18 +13,13 @@ async function findEnrollmentByUserId(userId: number): Promise<Enrollment> {
   });
 }
 
-async function findTicketByEnrollmentId(enrollmentId: number): Promise<Ticket> {
+async function findTicketByEnrollmentId(enrollmentId: number): Promise<Ticket & { TicketType: TicketType }> {
   return prisma.ticket.findFirst({
     where: {
       enrollmentId,
     },
-  });
-}
-
-async function findTypeByTicketId(id: number): Promise<TicketType> {
-  return prisma.ticketType.findUnique({
-    where: {
-      id,
+    include: {
+      TicketType: true,
     },
   });
 }
@@ -44,6 +39,5 @@ export default {
   findAllHotels,
   findEnrollmentByUserId,
   findTicketByEnrollmentId,
-  findTypeByTicketId,
   findHotelById,
 };
