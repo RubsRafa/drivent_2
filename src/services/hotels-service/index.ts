@@ -24,7 +24,6 @@ async function verifyIfUserHas(userId: number) {
 
   const userHasPayed: Payment = await paymentsRepository.findPaymentByTicketId(userHasTicket.id);
 
-  if (userHasTicket.status !== TicketStatus.PAID) throw paymentRequiredError('This user has not payed this ticket yet');
   if (!userHasPayed) throw paymentRequiredError('This user has not payed this ticket yet');
 
   return;
