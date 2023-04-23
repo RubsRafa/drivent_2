@@ -129,6 +129,15 @@ describe('GET /hotels', () => {
 
     const response = await server.get('/hotels').set('Authorization', `Bearer ${token}`);
     expect(response.status).toEqual(httpStatus.OK);
+    expect(response.body).toEqual([
+      {
+        id: expect.any(Number),
+        name: expect.any(String),
+        image: expect.any(String),
+        createdAt: expect.any(String),
+        updatedAt: expect.any(String),
+      },
+    ]);
   });
 });
 
@@ -242,7 +251,7 @@ describe('GET /hotels/:hotelId', () => {
     const ticket = await createTicket(enrollment.id, ticketType.id, TicketStatus.RESERVED);
 
     const hotel = await createHotel();
-    await createRoom(hotel.id);
+    const room = await createRoom(hotel.id);
 
     const body = { ticketId: ticket.id, cardData: generateCreditCardData() };
     await server.post('/payments/process').set('Authorization', `Bearer ${token}`).send(body);
@@ -251,5 +260,22 @@ describe('GET /hotels/:hotelId', () => {
 
     const response = await server.get(`/hotels/${hotel.id}`).set('Authorization', `Bearer ${token}`);
     expect(response.status).toEqual(httpStatus.OK);
+    expect(response.body).toEqual({
+      id: hotel.id,
+      name: hotel.name,
+      image: hotel.image,
+      createdAt: hotel.createdAt.toISOString(),
+      updatedAt: hotel.updatedAt.toISOString(),
+      Rooms: [
+        {
+          id: room.id,
+          name: room.name,
+          capacity: room.capacity,
+          hotelId: room.hotelId,
+          createdAt: room.createdAt.toISOString(),
+          updatedAt: room.updatedAt.toISOString(),
+        },
+      ],
+    });
   });
 });
