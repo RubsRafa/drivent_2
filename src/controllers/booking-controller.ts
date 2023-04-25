@@ -13,3 +13,18 @@ export async function getBooking(req: AuthenticatedRequest, res: Response) {
     return res.sendStatus(httpStatus.NOT_FOUND);
   }
 }
+
+export async function postBooking(req: AuthenticatedRequest, res: Response) {
+  const { userId } = req;
+  const roomId = Number(req.body.roomId);
+
+  try {
+    const bookingId = await bookingService.postBooking(userId, roomId);
+    return res.status(httpStatus.OK).send({ bookingId });
+  } catch (e) {
+    if (e.name === 'NotFoundError') {
+      return res.sendStatus(httpStatus.NOT_FOUND);
+    }
+    return res.sendStatus(httpStatus.NOT_FOUND);
+  }
+}
