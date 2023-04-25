@@ -25,6 +25,19 @@ export async function postBooking(req: AuthenticatedRequest, res: Response) {
     if (e.name === 'NotFoundError') {
       return res.sendStatus(httpStatus.NOT_FOUND);
     }
-    return res.sendStatus(httpStatus.NOT_FOUND);
+    return res.sendStatus(httpStatus.FORBIDDEN);
+  }
+}
+
+export async function putBooking(req: AuthenticatedRequest, res: Response) {
+  const { userId } = req;
+  const roomId = Number(req.body.roomId);
+
+  try {
+  } catch (e) {
+    if (e.name === 'NotFoundError') {
+      return res.sendStatus(httpStatus.NOT_FOUND);
+    }
+    return res.sendStatus(httpStatus.FORBIDDEN);
   }
 }

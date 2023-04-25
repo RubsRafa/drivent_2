@@ -5,14 +5,7 @@ import bookingRepository from '@/repositories/booking-repository';
 import enrollmentRepository from '@/repositories/enrollment-repository';
 import ticketsRepository from '@/repositories/tickets-repository';
 
-async function listBooking(userId: number) {
-  const booking = await bookingRepository.findBookingByUserId(userId);
-  if (!booking) throw notFoundError();
-
-  return booking;
-}
-
-async function postBooking(userId: number, roomId: number) {
+async function verifyInfo(userId: number, roomId: number) {
   if (!roomId) throw notFoundError();
 
   const enrollment = await enrollmentRepository.findWithAddressByUserId(userId);
@@ -29,11 +22,33 @@ async function postBooking(userId: number, roomId: number) {
   const allBookings = await bookingRepository.findBookingByRoomId(roomId);
   if (allBookings.length + 1 === room.capacity) throw forbiddenError('This room is already full');
 
+  return;
+}
+
+async function listBooking(userId: number) {
+  const booking = await bookingRepository.findBookingByUserId(userId);
+  if (!booking) throw notFoundError();
+
+  return booking;
+}
+
+async function postBooking(userId: number, roomId: number) {
+  await verifyInfo(userId, roomId);
+
   const booking = await bookingRepository.createBooking(userId, roomId);
   return booking.id;
+}
+
+async function putBooking(userId: number, roomId: number) {
+  await verifyInfo(userId, roomId);
+
+  const booking = await bookingRepository.findBookingByUserId(userId);
+  if (!booking) throw forbiddenError('This user has no reservations');
+  await bookingRepository.updateBooking(booking.id);
 }
 
 export default {
   listBooking,
   postBooking,
+  putBooking,
 };
