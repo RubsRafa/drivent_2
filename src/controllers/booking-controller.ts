@@ -34,6 +34,8 @@ export async function putBooking(req: AuthenticatedRequest, res: Response) {
   const roomId = Number(req.body.roomId);
 
   try {
+    const bookingId = await bookingService.putBooking(userId, roomId);
+    return res.status(httpStatus.OK).send({ bookingId });
   } catch (e) {
     if (e.name === 'NotFoundError') {
       return res.sendStatus(httpStatus.NOT_FOUND);

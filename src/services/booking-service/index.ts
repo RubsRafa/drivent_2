@@ -6,14 +6,13 @@ import enrollmentRepository from '@/repositories/enrollment-repository';
 import ticketsRepository from '@/repositories/tickets-repository';
 
 async function verifyInfo(userId: number, roomId: number) {
-  if (!roomId) throw notFoundError();
-
   const enrollment = await enrollmentRepository.findWithAddressByUserId(userId);
   if (!enrollment) throw notFoundError();
 
   const ticket = await ticketsRepository.findTicketByEnrollmentId(enrollment.id);
   if (!ticket) throw notFoundError();
-  if (ticket.status === TicketStatus.PAID || !ticket.TicketType.isRemote || ticket.TicketType.includesHotel)
+
+  if (ticket.status !== TicketStatus.PAID || ticket.TicketType.isRemote || !ticket.TicketType.includesHotel)
     throw forbiddenError('Your ticket is remote, does not include hotel or is not paid yet');
 
   const room = await bookingRepository.findRoom(roomId);
