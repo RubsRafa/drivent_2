@@ -29,7 +29,19 @@ async function listBooking(userId: number) {
   const booking = await bookingRepository.findBookingByUserId(userId);
   if (!booking) throw notFoundError();
 
-  return booking;
+  const myBooking = {
+    id: booking.id,
+    Room: {
+      id: booking.Room.id,
+      name: booking.Room.name,
+      capacity: booking.Room.capacity,
+      hotelId: booking.Room.hotelId,
+      createdAt: booking.Room.createdAt,
+      updatedAt: booking.Room.updatedAt,
+    },
+  };
+
+  return myBooking;
 }
 
 async function postBooking(userId: number, roomId: number) {
