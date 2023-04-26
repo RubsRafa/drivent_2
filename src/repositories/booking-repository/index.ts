@@ -1,6 +1,7 @@
+import { Booking, Room } from '@prisma/client';
 import { prisma } from '@/config';
 
-async function findBookingByUserId(userId: number) {
+async function findBookingByUserId(userId: number): Promise<Booking & { Room: Room }> {
   return prisma.booking.findFirst({
     where: {
       userId,
@@ -11,7 +12,7 @@ async function findBookingByUserId(userId: number) {
   });
 }
 
-async function findBookingByRoomId(roomId: number) {
+async function findBookingByRoomId(roomId: number): Promise<(Booking & { Room: Room })[]> {
   return prisma.booking.findMany({
     where: {
       roomId,
@@ -22,7 +23,7 @@ async function findBookingByRoomId(roomId: number) {
   });
 }
 
-async function findRoom(roomId: number) {
+async function findRoom(roomId: number): Promise<Room> {
   return prisma.room.findUnique({
     where: {
       id: roomId,
@@ -30,7 +31,7 @@ async function findRoom(roomId: number) {
   });
 }
 
-async function createBooking(userId: number, roomId: number) {
+async function createBooking(userId: number, roomId: number): Promise<Booking> {
   return prisma.booking.create({
     data: {
       userId,
@@ -39,7 +40,7 @@ async function createBooking(userId: number, roomId: number) {
   });
 }
 
-async function updateBooking(id: number) {
+async function updateBooking(id: number): Promise<Booking> {
   return prisma.booking.update({
     where: {
       id,

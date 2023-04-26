@@ -2,12 +2,13 @@ import httpStatus from 'http-status';
 import { Response } from 'express';
 import { AuthenticatedRequest } from '@/middlewares';
 import bookingService from '@/services/booking-service';
+import { BookingInfo } from '@/protocols';
 
 export async function getBooking(req: AuthenticatedRequest, res: Response) {
   const { userId } = req;
 
   try {
-    const booking = await bookingService.listBooking(userId);
+    const booking: BookingInfo = await bookingService.listBooking(userId);
     return res.status(httpStatus.OK).send(booking);
   } catch (e) {
     return res.sendStatus(httpStatus.NOT_FOUND);

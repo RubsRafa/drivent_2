@@ -4,8 +4,9 @@ import { forbiddenError } from '@/errors/forbidden-error';
 import bookingRepository from '@/repositories/booking-repository';
 import enrollmentRepository from '@/repositories/enrollment-repository';
 import ticketsRepository from '@/repositories/tickets-repository';
+import { BookingInfo } from '@/protocols';
 
-async function verifyInfo(userId: number, roomId: number) {
+async function verifyInfo(userId: number, roomId: number): Promise<void> {
   const enrollment = await enrollmentRepository.findWithAddressByUserId(userId);
   if (!enrollment) throw notFoundError();
 
@@ -26,11 +27,11 @@ async function verifyInfo(userId: number, roomId: number) {
   return;
 }
 
-async function listBooking(userId: number) {
+async function listBooking(userId: number): Promise<BookingInfo> {
   const booking = await bookingRepository.findBookingByUserId(userId);
   if (!booking) throw notFoundError();
 
-  const myBooking = {
+  const myBooking: BookingInfo = {
     id: booking.id,
     Room: {
       id: booking.Room.id,
@@ -45,14 +46,14 @@ async function listBooking(userId: number) {
   return myBooking;
 }
 
-async function postBooking(userId: number, roomId: number) {
+async function postBooking(userId: number, roomId: number): Promise<number> {
   await verifyInfo(userId, roomId);
 
   const booking = await bookingRepository.createBooking(userId, roomId);
   return booking.id;
 }
 
-async function putBooking(userId: number, roomId: number) {
+async function putBooking(userId: number, roomId: number): Promise<number> {
   await verifyInfo(userId, roomId);
 
   const booking = await bookingRepository.findBookingByUserId(userId);
