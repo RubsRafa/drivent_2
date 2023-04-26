@@ -7,15 +7,16 @@ import ticketsRepository from '@/repositories/tickets-repository';
 import { BookingInfo } from '@/protocols';
 
 async function verifyInfo(userId: number, roomId: number): Promise<void> {
+  if (!roomId) throw notFoundError();
+
   const enrollment = await enrollmentRepository.findWithAddressByUserId(userId);
   if (!enrollment) throw notFoundError();
 
   const ticket = await ticketsRepository.findTicketByEnrollmentId(enrollment.id);
   if (!ticket) throw notFoundError();
+
   if (ticket.status !== TicketStatus.PAID || ticket.TicketType.isRemote || !ticket.TicketType.includesHotel)
     throw forbiddenError('Your ticket is remote, does not include hotel or is not paid yet');
-
-  if (!roomId) throw notFoundError();
 
   const room = await bookingRepository.findRoom(roomId);
 
