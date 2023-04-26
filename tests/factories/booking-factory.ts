@@ -1,3 +1,4 @@
+import faker from '@faker-js/faker';
 import { prisma } from '@/config';
 
 export async function createBooking(userId: number, roomId: number) {
@@ -7,4 +8,8 @@ export async function createBooking(userId: number, roomId: number) {
       roomId,
     },
   });
+}
+
+export async function roomId() {
+  return { roomId: faker.datatype.number() };
 }
