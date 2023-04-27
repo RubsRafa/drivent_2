@@ -347,10 +347,12 @@ describe('PUT /booking', () => {
       await createPayment(ticket.id, ticketType.price);
 
       const hotel = await createHotel();
-      const room = await createRoomWithHotelId(hotel.id);
-      const booking = await createBooking(user.id, room.id);
+      const oldRoom = await createRoomWithHotelId(hotel.id);
+      const booking = await createBooking(user.id, oldRoom.id);
 
-      const body = { roomId: room.id };
+      const newRoom = await createRoomWithHotelId(hotel.id);
+
+      const body = { roomId: newRoom.id };
 
       const response = await server.put(`/booking/${booking.id}`).set('Authorization', `Bearer ${token}`).send(body);
       expect(response.status).toEqual(httpStatus.OK);
