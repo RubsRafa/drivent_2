@@ -59,7 +59,7 @@ async function putBooking(userId: number, roomId: number): Promise<number> {
 
   const booking = await bookingRepository.findBookingByUserId(userId);
   if (!booking) throw forbiddenError('This user has no reservations');
-  await bookingRepository.updateBooking(booking.id);
+  await bookingRepository.updateBooking(booking.id, roomId);
 
   return booking.id;
 }

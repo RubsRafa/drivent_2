@@ -40,12 +40,14 @@ async function createBooking(userId: number, roomId: number): Promise<Booking> {
   });
 }
 
-async function updateBooking(id: number): Promise<Booking> {
+async function updateBooking(id: number, roomId: number): Promise<Booking> {
   return prisma.booking.update({
     where: {
       id,
     },
-    data: {},
+    data: {
+      roomId,
+    },
   });
 }
 
