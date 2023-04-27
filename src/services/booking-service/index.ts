@@ -58,7 +58,6 @@ async function putBooking(userId: number, roomId: number): Promise<number> {
   await verifyInfo(userId, roomId);
 
   const booking = await bookingRepository.findBookingByUserId(userId);
-  console.log('room anterior', booking.roomId, roomId);
   if (!booking) throw forbiddenError('This user has no reservations');
   await bookingRepository.updateBooking(booking.id, roomId);
 
