@@ -1,18 +1,19 @@
-import { Booking, Room } from '@prisma/client';
+import { Booking } from '@prisma/client';
 import { prisma } from '@/config';
 
-async function findBookingByUserId(userId: number): Promise<Booking & { Room: Room }> {
-  return prisma.booking.findFirst({
-    where: {
+type CreateParams = Omit<Booking, 'id' | 'createdAt' | 'updatedAt'>;
+type UpdateParams = Omit<Booking, 'createdAt' | 'updatedAt'>;
+
+async function create({ roomId, userId }: CreateParams): Promise<Booking> {
+  return prisma.booking.create({
+    data: {
+      roomId,
       userId,
-    },
-    include: {
-      Room: true,
     },
   });
 }
 
-async function findBookingByRoomId(roomId: number): Promise<(Booking & { Room: Room })[]> {
+async function findByRoomId(roomId: number) {
   return prisma.booking.findMany({
     where: {
       roomId,
@@ -23,40 +24,37 @@ async function findBookingByRoomId(roomId: number): Promise<(Booking & { Room: R
   });
 }
 
-async function findRoom(roomId: number): Promise<Room> {
-  return prisma.room.findUnique({
+async function findByUserId(userId: number) {
+  return prisma.booking.findFirst({
     where: {
-      id: roomId,
-    },
-  });
-}
-
-async function createBooking(userId: number, roomId: number): Promise<Booking> {
-  return prisma.booking.create({
-    data: {
       userId,
-      roomId,
+    },
+    include: {
+      Room: true,
     },
   });
 }
 
-async function updateBooking(id: number, roomId: number): Promise<Booking> {
-  return prisma.booking.update({
+async function upsertBooking({ id, roomId, userId }: UpdateParams) {
+  return prisma.booking.upsert({
     where: {
       id,
     },
-    data: {
+    create: {
+      roomId,
+      userId,
+    },
+    update: {
       roomId,
     },
   });
 }
 
 const bookingRepository = {
-  findBookingByUserId,
-  findBookingByRoomId,
-  findRoom,
-  createBooking,
-  updateBooking,
+  create,
+  findByRoomId,
+  findByUserId,
+  upsertBooking,
 };
 
 export default bookingRepository;

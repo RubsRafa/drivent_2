@@ -1,71 +1,67 @@
-import { TicketStatus } from '@prisma/client';
 import { notFoundError } from '@/errors';
-import { forbiddenError } from '@/errors/forbidden-error';
+import { badRequestError } from '@/errors/bad-request-error';
+import { cannotBookingError } from '@/errors/cannot-booking-error';
 import bookingRepository from '@/repositories/booking-repository';
 import enrollmentRepository from '@/repositories/enrollment-repository';
+import roomRepository from '@/repositories/room-repository';
 import ticketsRepository from '@/repositories/tickets-repository';
-import { BookingInfo } from '@/protocols';
 
-async function verifyInfo(userId: number, roomId: number): Promise<void> {
-  if (!roomId) throw notFoundError();
-
+async function checkEnrollmentTicket(userId: number) {
   const enrollment = await enrollmentRepository.findWithAddressByUserId(userId);
-  if (!enrollment) throw notFoundError();
+  if (!enrollment) throw cannotBookingError();
 
   const ticket = await ticketsRepository.findTicketByEnrollmentId(enrollment.id);
-  if (!ticket) throw notFoundError();
 
-  if (ticket.status !== TicketStatus.PAID || ticket.TicketType.isRemote || !ticket.TicketType.includesHotel)
-    throw forbiddenError('Your ticket is remote, does not include hotel or is not paid yet');
+  if (!ticket || ticket.status === 'RESERVED' || ticket.TicketType.isRemote || !ticket.TicketType.includesHotel) {
+    throw cannotBookingError();
+  }
+}
 
-  const room = await bookingRepository.findRoom(roomId);
+async function checkValidBooking(roomId: number) {
+  const room = await roomRepository.findById(roomId);
+  const bookings = await bookingRepository.findByRoomId(roomId);
 
   if (!room) throw notFoundError();
-
-  const allBookings = await bookingRepository.findBookingByRoomId(roomId);
-  if (allBookings.length + 1 >= room.capacity) throw forbiddenError('This room is already full');
-
-  return;
+  if (room.capacity <= bookings.length) throw cannotBookingError();
 }
 
-async function listBooking(userId: number): Promise<BookingInfo> {
-  const booking = await bookingRepository.findBookingByUserId(userId);
+async function getBooking(userId: number) {
+  const booking = await bookingRepository.findByUserId(userId);
   if (!booking) throw notFoundError();
 
-  const myBooking: BookingInfo = {
+  return booking;
+}
+
+async function bookingRoomById(userId: number, roomId: number) {
+  if (!roomId) throw badRequestError();
+
+  await checkEnrollmentTicket(userId);
+  await checkValidBooking(roomId);
+
+  return bookingRepository.create({ roomId, userId });
+}
+
+async function changeBookingRoomById(userId: number, roomId: number) {
+  if (!roomId) throw badRequestError();
+
+  await checkValidBooking(roomId);
+  const booking = await bookingRepository.findByUserId(userId);
+
+  if (!booking || booking.userId !== userId) throw cannotBookingError();
+
+  return bookingRepository.upsertBooking({
     id: booking.id,
-    Room: {
-      id: booking.Room.id,
-      name: booking.Room.name,
-      capacity: booking.Room.capacity,
-      hotelId: booking.Room.hotelId,
-      createdAt: booking.Room.createdAt,
-      updatedAt: booking.Room.updatedAt,
-    },
-  };
-
-  return myBooking;
+    roomId,
+    userId,
+  });
 }
 
-async function postBooking(userId: number, roomId: number): Promise<number> {
-  await verifyInfo(userId, roomId);
-
-  const booking = await bookingRepository.createBooking(userId, roomId);
-  return booking.id;
-}
-
-async function putBooking(userId: number, roomId: number): Promise<number> {
-  await verifyInfo(userId, roomId);
-
-  const booking = await bookingRepository.findBookingByUserId(userId);
-  if (!booking) throw forbiddenError('This user has no reservations');
-  await bookingRepository.updateBooking(booking.id, roomId);
-
-  return booking.id;
-}
-
-export default {
-  listBooking,
-  postBooking,
-  putBooking,
+const bookingService = {
+  bookingRoomById,
+  getBooking,
+  changeBookingRoomById,
+  checkEnrollmentTicket,
+  checkValidBooking,
 };
+
+export default bookingService;
