@@ -64,3 +64,15 @@ export function returnTicketWithType(isRemote: boolean, includesHotel: boolean, 
     },
   };
 }
+
+export function returnTicketType() {
+  return {
+    id: faker.datatype.number(),
+    name: faker.datatype.string(),
+    price: faker.datatype.number(),
+    isRemote: faker.datatype.boolean(),
+    includesHotel: faker.datatype.boolean(),
+    createdAt: faker.datatype.datetime(),
+    updatedAt: faker.datatype.datetime(),
+  };
+}
