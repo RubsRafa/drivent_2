@@ -30,3 +30,33 @@ export async function createRoomWithHotelIdNoCapacity(hotelId: number) {
     },
   });
 }
+
+export async function returnHotel() {
+  return {
+    id: faker.datatype.number(),
+    name: faker.datatype.string(),
+    image: faker.datatype.string(),
+    createdAt: faker.datatype.datetime(),
+    updatedAt: faker.datatype.datetime(),
+  };
+}
+
+export async function returnHotelWithRoom() {
+  return {
+    id: faker.datatype.number(),
+    name: faker.datatype.string(),
+    image: faker.datatype.string(),
+    createdAt: faker.datatype.datetime(),
+    updatedAt: faker.datatype.datetime(),
+    Rooms: [
+      {
+        id: faker.datatype.number(),
+        name: faker.datatype.string(),
+        capacity: faker.datatype.number(),
+        hotelId: faker.datatype.number(),
+        createdAt: faker.datatype.datetime(),
+        updatedAt: faker.datatype.datetime(),
+      },
+    ],
+  };
+}
